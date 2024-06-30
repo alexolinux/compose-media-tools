@@ -8,7 +8,7 @@ services:
       - "88:80"
       - "8443:443"
     volumes:
-      - ./nginx-data:/data
+      - nginx_data:/data
       - ./letsencrypt:/etc/letsencrypt
   portainer:
     image: portainer/portainer-ce
@@ -27,8 +27,8 @@ services:
     ports:
       - "10180:80"
     volumes:
-      - /DATA:/data
-      - ./filebrowser:/srv
+      - filebrowser_data:/data
+      - filebrowser_srv:/srv
     environment:
       - TZ=UTC
       - UID=1000
@@ -44,7 +44,7 @@ services:
       - WEBUI_PORT=8080
       - TORRENTING_PORT=6881
     volumes:
-      - /DATA/appdata:/config
+      - qbit_data:/config
       - /DATA/downloads:/downloads
     ports:
       - "8080:8080"
@@ -56,6 +56,13 @@ networks:
     name: nginx-ssl
 
 volumes:
+  nginx_data:
+    external: true
   portainer_data:
+    external: true
+  filebrowser_srv:
+  filebrowser_data:
+    external: true
+  qbit_data:
     external: true
 
