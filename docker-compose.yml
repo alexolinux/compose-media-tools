@@ -19,7 +19,24 @@ services:
       - "9000:9000"
     volumes:
       - portainer_data:/data
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock  
+  jellyfin:
+    image: jellyfin/jellyfin
+    container_name: jellyfin
+    restart: unless-stopped
+    ports:
+      - "8096:8096"
+      - "8920:8920"
+    volumes:
+      - ${HOME}/.config/jellyfin:/config
+      - ${HOME}/.cache/jellyfin:/cache
+      - type: bind
+        source: /DATA
+        target: /media
+    environment:
+      - TZ=UTC
+      - PUID=1000
+      - PGID=1000
   filebrowser:
     image: filebrowser/filebrowser
     container_name: filebrowser
