@@ -9,7 +9,7 @@ services:
       - "8443:443"
     volumes:
       - nginx_data:/data
-      - ./letsencrypt:/etc/letsencrypt
+      - ${HOME}/.config/letsencrypt:/etc/letsencrypt
   portainer:
     image: portainer/portainer-ce
     container_name: portainer
