@@ -28,3 +28,11 @@ Orchestrated Media Tools for Raspberry PI
 │   └── appdata
 └── README.md
 ```
+
+#### .env
+
+```shell
+FILE_DATA="PATH_HERE"
+BIT_DATA="PATH_HERE"
+```
+

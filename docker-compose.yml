@@ -33,6 +33,8 @@ services:
       - type: bind
         source: /DATA
         target: /media
+        bind:
+          propagation: shared
     environment:
       - TZ=UTC
       - PUID=1000
@@ -45,7 +47,7 @@ services:
       - "10180:80"
     volumes:
       - filebrowser_data:/data
-      - filebrowser_srv:/srv
+      - ${FILE_DATA}:/srv
     environment:
       - TZ=UTC
       - UID=1000
@@ -62,7 +64,7 @@ services:
       - TORRENTING_PORT=6881
     volumes:
       - qbit_data:/config
-      - /DATA/downloads:/downloads
+      - ${BIT_DATA}:/downloads
     ports:
       - "8080:8080"
       - "6881:6881"
@@ -77,9 +79,6 @@ volumes:
     external: true
   portainer_data:
     external: true
-  filebrowser_srv:
   filebrowser_data:
-    external: true
   qbit_data:
     external: true
-
