@@ -4,35 +4,21 @@ Orchestrated Media Tools for Raspberry PI
 ```shell
 .
 ├── docker-compose.yml
-├── filebrowser
-├── letsencrypt
+├── .env
 ├── LICENSE
-├── nginx-data
-│   ├── access
-│   ├── custom_ssl
-│   ├── database.sqlite
-│   ├── keys.json
-│   ├── letsencrypt-acme-challenge
-│   ├── logs
-│   │   ├── fallback_access.log
-│   │   └── fallback_error.log
-│   └── nginx
-│       ├── dead_host
-│       ├── default_host
-│       ├── default_www
-│       ├── proxy_host
-│       ├── redirection_host
-│       ├── stream
-│       └── temp
-├── qbittorrent
-│   └── appdata
 └── README.md
 ```
 
-#### .env
+## Container/Services
 
-```shell
-FILE_DATA="PATH_HERE"
-BIT_DATA="PATH_HERE"
-```
+* portainer
+* proxymanager
+* jellyfin
+* (owncloud)[https://doc.owncloud.com/server/next/admin_manual/installation/docker/#docker-compose]
+* mariadb (for owncloud)
+* redis (for owncloud)
+
+## .env
+
+Add required `.env` to be read by `docker-compose.yml`
 

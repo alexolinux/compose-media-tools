@@ -19,7 +19,7 @@ services:
       - "9000:9000"
     volumes:
       - portainer_data:/data
-      - /var/run/docker.sock:/var/run/docker.sock  
+      - /var/run/docker.sock:/var/run/docker.sock
   jellyfin:
     image: jellyfin/jellyfin
     container_name: jellyfin
@@ -39,47 +39,82 @@ services:
       - TZ=UTC
       - PUID=1000
       - PGID=1000
-  filebrowser:
-    image: filebrowser/filebrowser
-    container_name: filebrowser
+  owncloud:
+    image: owncloud/server:${OWNCLOUD_VERSION}
+    container_name: owncloud
     restart: unless-stopped
     ports:
-      - "10180:80"
-    volumes:
-      - filebrowser_data:/data
-      - ${FILE_DATA}:/srv
+      - ${OWNCLOUD_PORT}:8080
+    depends_on:
+      - mariadb
+      - redis
     environment:
-      - TZ=UTC
-      - UID=1000
-      - GID=1000
-  qbittorrent:
-    image: lscr.io/linuxserver/qbittorrent:latest
-    container_name: qbittorrent
-    restart: unless-stopped
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Etc/UTC
-      - WEBUI_PORT=8080
-      - TORRENTING_PORT=6881
+      - OWNCLOUD_DOMAIN=${OWNCLOUD_DOMAIN}
+      - OWNCLOUD_TRUSTED_DOMAINS=${OWNCLOUD_TRUSTED_DOMAINS}
+      - OWNCLOUD_DB_TYPE=mysql
+      - OWNCLOUD_DB_NAME=owncloud
+      - OWNCLOUD_DB_USERNAME=owncloud
+      - OWNCLOUD_DB_PASSWORD=owncloud
+      - OWNCLOUD_DB_HOST=mariadb
+      - OWNCLOUD_ADMIN_USERNAME=${ADMIN_USERNAME}
+      - OWNCLOUD_ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - OWNCLOUD_MYSQL_UTF8MB4=true
+      - OWNCLOUD_REDIS_ENABLED=true
+      - OWNCLOUD_REDIS_HOST=redis
+    healthcheck:
+      test: ["CMD", "/usr/bin/healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
     volumes:
-      - qbit_data:/config
-      - ${BIT_DATA}:/downloads
-    ports:
-      - "8080:8080"
-      - "6881:6881"
-      - "6881:6881/udp"  
+      - files:/mnt/data
+  mariadb:
+    image: mariadb:10.11
+    container_name: mariadb
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=owncloud
+      - MYSQL_USER=owncloud
+      - MYSQL_PASSWORD=owncloud
+      - MYSQL_DATABASE=owncloud
+      - MARIADB_AUTO_UPGRADE=1
+    command: ["--max-allowed-packet=128M", "--innodb-log-file-size=64M"]
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-u", "root", "--password=owncloud"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - mysql:/var/lib/mysql
+  redis:
+    image: redis:6
+    container_name: redis
+    restart: always
+    command: ["--databases", "1"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - redis:/data
 
+# Network
 networks:
   default:
     name: nginx-ssl
 
+# Volumes
 volumes:
   nginx_data:
     external: true
   portainer_data:
     external: true
-  filebrowser_data:
-  qbit_data:
-    external: true
+  # Owncloud Volumes
+  files:
+    driver: local
+  mysql:
+    driver: local
+  redis:
+    driver: local
 
