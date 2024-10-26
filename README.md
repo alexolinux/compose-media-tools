@@ -39,6 +39,18 @@ HOST_UID=1001
 HOST_GID=1001
 ```
 
+## Make
+
+Use make to manage your environment.
+
+```yaml
+Usage:
+  make start       Start the Docker Compose environment
+  make stop        Stop the Docker Compose environment
+  make restart     Restart the Docker Compose environment
+  make help        Display this help message
+```
+
 ### owncloud Local Storage
 
 [Local External Storage](https://doc.owncloud.com/server/next/admin_manual/configuration/files/external_storage/local.html) is only configurable via the ownCloud admin settings.
