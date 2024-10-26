@@ -22,6 +22,38 @@ Orchestrated Media Tools for Raspberry PI
 
 Add required `.env` to be loaded by `docker-compose.yml`
 
+* `.env` template
+
+```shell
+DATA_MEDIA="/DATA_MEDIA"
+DATA_CLOUD="/DATA_CLOUD"
+OWNCLOUD_VERSION=10.15
+OWNCLOUD_DOMAIN=localhost:8080
+OWNCLOUD_PORT=8080
+OWNCLOUD_TRUSTED_DOMAINS=localhost
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=<admin_pass_here>
+TZ="UTC"
+HOST_USER="sysadmin"
+HOST_UID=1001
+HOST_GID=1001
+```
+
+### owncloud Local Storage
+
+[Local External Storage](https://doc.owncloud.com/server/next/admin_manual/configuration/files/external_storage/local.html) is only configurable via the ownCloud admin settings.
+
+* Enable Local Storage
+
+Add the specified line to the `config.php` in owncloud container:
+
+```shell
+echo "'files_external_allow_create_new_local' => 'true'," >> /var/www/owncloud/config/config.php
+```
+
+*Using **Local Storage** is a security risk, only use it if you know what you are doing.*
+
 ## More cool docker-compose projects
 
 https://github.com/docker/awesome-compose/tree/master
+

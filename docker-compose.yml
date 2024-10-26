@@ -31,14 +31,14 @@ services:
       - ${HOME}/.config/jellyfin:/config
       - ${HOME}/.cache/jellyfin:/cache
       - type: bind
-        source: /DATA
+        source: ${DATA_MEDIA}
         target: /media
         bind:
           propagation: shared
     environment:
-      - TZ=UTC
-      - PUID=1000
-      - PGID=1000
+      - TZ=${TZ}
+      - PUID=${HOST_UID}
+      - PGID=${HOST_GID}
   owncloud:
     image: owncloud/server:${OWNCLOUD_VERSION}
     container_name: owncloud
@@ -51,13 +51,13 @@ services:
     environment:
       - OWNCLOUD_DOMAIN=${OWNCLOUD_DOMAIN}
       - OWNCLOUD_TRUSTED_DOMAINS=${OWNCLOUD_TRUSTED_DOMAINS}
+      - OWNCLOUD_ADMIN_USERNAME=${ADMIN_USERNAME}
+      - OWNCLOUD_ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - OWNCLOUD_DB_TYPE=mysql
       - OWNCLOUD_DB_NAME=owncloud
       - OWNCLOUD_DB_USERNAME=owncloud
       - OWNCLOUD_DB_PASSWORD=owncloud
       - OWNCLOUD_DB_HOST=mariadb
-      - OWNCLOUD_ADMIN_USERNAME=${ADMIN_USERNAME}
-      - OWNCLOUD_ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - OWNCLOUD_MYSQL_UTF8MB4=true
       - OWNCLOUD_REDIS_ENABLED=true
       - OWNCLOUD_REDIS_HOST=redis
@@ -67,7 +67,13 @@ services:
       timeout: 10s
       retries: 5
     volumes:
-      - files:/mnt/data
+      - owncloud:/mnt/data
+      #https://doc.owncloud.com/server/next/admin_manual/configuration/files/external_storage/local.html
+      - type: bind
+        source: ${DATA_CLOUD}
+        target: /owncloud
+        bind:
+          propagation: shared
   mariadb:
     image: mariadb:10.11
     container_name: mariadb
@@ -110,11 +116,10 @@ volumes:
     external: true
   portainer_data:
     external: true
-  # Owncloud Volumes
-  files:
-    driver: local
   mysql:
     driver: local
   redis:
+    driver: local
+  owncloud:
     driver: local
 
