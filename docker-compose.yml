@@ -1,6 +1,6 @@
 services:
   proxymanager:
-    image: jc21/nginx-proxy-manager:latest
+    image: jc21/nginx-proxy-manager:${PROXYMANAGER_VERSION}
     container_name: proxymanager
     restart: unless-stopped
     ports:
@@ -21,7 +21,7 @@ services:
       - portainer_data:/data
       - /var/run/docker.sock:/var/run/docker.sock
   jellyfin:
-    image: jellyfin/jellyfin
+    image: jellyfin/jellyfin:${JELLYFIN_VERSION}
     container_name: jellyfin
     restart: unless-stopped
     ports:
@@ -75,7 +75,7 @@ services:
         bind:
           propagation: shared
   mariadb:
-    image: mariadb:10.11
+    image: mariadb:${MARIADB_VERSION}
     container_name: mariadb
     restart: always
     environment:
@@ -93,7 +93,7 @@ services:
     volumes:
       - mysql:/var/lib/mysql
   redis:
-    image: redis:6
+    image: redis:${REDIS_VERSION}
     container_name: redis
     restart: always
     command: ["--databases", "1"]
