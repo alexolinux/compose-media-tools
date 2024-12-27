@@ -13,6 +13,7 @@ Orchestrated Media Tools for Raspberry PI
 
 * [portainer](https://github.com/portainer/portainer-compose/blob/master/docker-stack.yml)
 * [proxymanager](https://nginxproxymanager.com/setup/)
+* [duckdns](https://docs.linuxserver.io/images/docker-duckdns/)
 * [jellyfin](https://jellyfin.org/docs/general/installation/container/)
 * [owncloud](https://doc.owncloud.com/server/next/admin_manual/installation/docker/#docker-compose)
 * [mariadb](https://hub.docker.com/_/mariadb)
@@ -22,7 +23,7 @@ Orchestrated Media Tools for Raspberry PI
 
 Add required `.env` to be loaded by `docker-compose.yml`
 
-* `.env` template
+* `.env` sample template
 
 ```shell
 MARIADB_VERSION=10.11
@@ -41,6 +42,9 @@ TZ="UTC"
 HOST_USER="sysadmin"
 HOST_UID=1001
 HOST_GID=1001
+SUBDOMAINS="local"
+DUCKDNS_API=<api_token_here>
+DUCKDNS_PORT=8089
 ```
 
 ## Make
@@ -78,3 +82,4 @@ https://github.com/docker/awesome-compose/tree/master
 Alex Mendes
 
 <https://www.linkedin.com/in/mendesalex/>
+
