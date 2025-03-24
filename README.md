@@ -11,6 +11,7 @@ Orchestrated Media Tools for Raspberry PI
 
 ## Container/Services
 
+* [pihole](https://github.com/pi-hole/docker-pi-hole)
 * [portainer](https://github.com/portainer/portainer-compose/blob/master/docker-stack.yml)
 * [proxymanager](https://nginxproxymanager.com/setup/)
 * [duckdns](https://docs.linuxserver.io/images/docker-duckdns/)
@@ -26,6 +27,8 @@ Add required `.env` to be loaded by `docker-compose.yml`
 * `.env` sample template
 
 ```shell
+PIHOLE_ETC="/etc/pihole"
+PIHOLE_PASSWORD="<pihole_admin_pass_here>"
 MARIADB_VERSION=10.11
 REDIS_VERSION=6
 PROXYMANAGER_VERSION="latest"
