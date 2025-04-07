@@ -80,9 +80,7 @@ echo "'files_external_allow_create_new_local' => 'true'," >> /var/www/owncloud/c
 
 https://github.com/docker/awesome-compose/tree/master
 
-
 **Author:**
 Alex Mendes
 
 <https://www.linkedin.com/in/mendesalex/>
-
