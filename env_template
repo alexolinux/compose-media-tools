@@ -1,4 +1,4 @@
-PIHOLE_ETC="/etc/pihole"
+CONFIG="${HOME}/.config/microservices"
 PIHOLE_PASSWORD="<pihole_pass_here>"
 MARIADB_VERSION=10.11
 REDIS_VERSION=6
