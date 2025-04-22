@@ -37,4 +37,3 @@ help:
 	@echo "  make stop        Stop the Docker Compose environment"
 	@echo "  make restart     Restart the Docker Compose environment"
 	@echo "  make help        Display this help message"
-

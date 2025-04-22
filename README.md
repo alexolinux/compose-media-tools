@@ -1,13 +1,26 @@
 # compose-media-tools
+
+---------------------
+
 Orchestrated Media Tools for Raspberry PI
 
 ```shell
 .
+├── config
+│   └── init-ext.sh
 ├── docker-compose.yml
-├── .env
+├── env_template
 ├── LICENSE
+├── Makefile
 └── README.md
+
+2 directories, 6 files
 ```
+
+## Requirements
+
+* [docker](https://www.docker.com/get-started/)
+* [docker-compose](https://github.com/docker/compose/releases)
 
 ## Container/Services
 
@@ -24,30 +37,39 @@ Orchestrated Media Tools for Raspberry PI
 
 Add required `.env` to be loaded by `docker-compose.yml`
 
-* `.env` sample template
+* `.env` sample template: Change these values according to your needs.
 
 ```shell
-PIHOLE_ETC="/etc/pihole"
-PIHOLE_PASSWORD="<pihole_admin_pass_here>"
-MARIADB_VERSION=10.11
-REDIS_VERSION=6
-PROXYMANAGER_VERSION="latest"
-JELLYFIN_VERSION=10.10.1
-OWNCLOUD_VERSION=10.15
-DATA_MEDIA="/DATA"
-DATA_CLOUD="/CLOUDATA"
-OWNCLOUD_DOMAIN=localhost:8080
-OWNCLOUD_PORT=8080
-OWNCLOUD_TRUSTED_DOMAINS=localhost
-ADMIN_USERNAME=admin
-ADMIN_PASSWORD=<admin_pass_here>
+CONFIG="${HOME}/.config/microservices"
 TZ="UTC"
 HOST_USER="sysadmin"
-HOST_UID=1001
-HOST_GID=1001
-SUBDOMAINS="local"
-DUCKDNS_API=<api_token_here>
-DUCKDNS_PORT=8089
+HOST_UID=1000
+HOST_GID=1000
+SUBDOMAINS=<subdomains_here>
+PIHOLE_PASSWORD=<pihole_admin_password_here>
+JELLYFIN_VERSION=10.10.7
+PROXYMANAGER_VERSION="latest"
+MARIADB_VERSION=10.5.28
+REDIS_VERSION=7.4
+OWNCLOUD_VERSION=10.15
+OWNCLOUD_DOMAIN=localhost:8080
+OWNCLOUD_PORT=8080
+OWNCLOUD_TRUSTED_DOMAINS=localhost,192.168.0.100
+ADMIN_USERNAME=<owncloud_user_here>
+ADMIN_PASSWORD=<owncloud_password_here>
+DUCKDNS_API=<duckdns_api_token_here>
+DUCKDNS_PORT=8024
+DATA_CLOUD=<owncloud_mountpoint_files>
+DATA_MEDIA=<jellyfin_mountpoint_files>
+OWNCLOUD_DB_NAME=owncloud
+OWNCLOUD_DB_USERNAME=owncloud
+OWNCLOUD_DB_PASSWORD=owncloud
+OWNCLOUD_DB_HOST=mariadb
+OWNCLOUD_REDIS_HOST=redis
+MYSQL_ROOT_PASSWORD=owncloud
+MYSQL_USER=owncloud
+MYSQL_PASSWORD=owncloud
+MYSQL_DATABASE=owncloud
 ```
 
 ## Make
@@ -71,10 +93,12 @@ Usage:
 Add the specified line to the `config.php` in owncloud container:
 
 ```shell
-echo "'files_external_allow_create_new_local' => 'true'," >> /var/www/owncloud/config/config.php
+'files_external_allow_create_new_local' => 'true',
 ```
 
-*Using **Local Storage** is a security risk, only use it if you know what you are doing.*
+:diamond_shape_with_a_dot_inside: *I have created a script to add this line inside of the owncloud container. It is available on `config/init-ext.sh`*
+
+:skull: *Using **Local Storage** is a security risk, only use it if you know what you are doing.*
 
 ## More cool docker-compose projects
 
