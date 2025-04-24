@@ -24,10 +24,7 @@ Orchestrated Media Tools for **[Raspberry PI](https://www.raspberrypi.com/tutori
 
 ## Container/Services
 
-* [pihole](https://github.com/pi-hole/docker-pi-hole)
 * [portainer](https://github.com/portainer/portainer-compose/blob/master/docker-stack.yml)
-* [proxymanager](https://nginxproxymanager.com/setup/)
-* [duckdns](https://docs.linuxserver.io/images/docker-duckdns/)
 * [jellyfin](https://jellyfin.org/docs/general/installation/container/)
 * [owncloud](https://doc.owncloud.com/server/next/admin_manual/installation/docker/#docker-compose)
 * [mariadb](https://hub.docker.com/_/mariadb)
@@ -46,9 +43,7 @@ HOST_USER="sysadmin"
 HOST_UID=1000
 HOST_GID=1000
 SUBDOMAINS=<subdomains_here>
-PIHOLE_PASSWORD=<pihole_admin_password_here>
 JELLYFIN_VERSION=10.10.7
-PROXYMANAGER_VERSION="latest"
 MARIADB_VERSION=10.5.28
 REDIS_VERSION=7.4
 OWNCLOUD_VERSION=10.15
@@ -57,8 +52,6 @@ OWNCLOUD_PORT=8080
 OWNCLOUD_TRUSTED_DOMAINS=localhost,192.168.0.100
 ADMIN_USERNAME=<owncloud_user_here>
 ADMIN_PASSWORD=<owncloud_password_here>
-DUCKDNS_API=<duckdns_api_token_here>
-DUCKDNS_PORT=8024
 DATA_CLOUD=<owncloud_mountpoint_files>
 DATA_MEDIA=<jellyfin_mountpoint_files>
 OWNCLOUD_DB_NAME=owncloud
