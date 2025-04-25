@@ -1,5 +1,4 @@
-services:
-  
+services: 
   portainer:
     image: portainer/portainer-ce
     container_name: portainer
@@ -35,6 +34,30 @@ services:
       - TZ=${TZ}
       - PUID=${HOST_UID}
       - PGID=${HOST_GID}
+  #https://hub.docker.com/r/linuxserver/tvheadend
+  tvheadend:
+    image: lscr.io/linuxserver/tvheadend:${TVHEADEND_VERSION:-latest}
+    container_name: tvheadend
+    hostname: tvheadend
+    restart: unless-stopped
+    networks:
+      - xlocal
+    environment:
+      - TZ=${TZ}
+      - PUID=${HOST_UID}
+      - PGID=${HOST_GID}
+      #- RUN_OPTS= #optional
+    volumes:
+      - '${CONFIG}/tvheadend:/config'
+      #- /path/to/recordings:/recordings
+      - type: bind
+        source: ${TV_MEDIA}
+        target: /recordings
+        bind:
+          propagation: shared
+    ports:
+      - 9981:9981
+      - 9982:9982  
   owncloud:
     image: owncloud/server:${OWNCLOUD_VERSION:-latest}
     container_name: owncloud
