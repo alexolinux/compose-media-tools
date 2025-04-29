@@ -1,5 +1,4 @@
 services:
-  
   portainer:
     image: portainer/portainer-ce
     container_name: portainer
@@ -36,6 +35,7 @@ services:
       - PUID=${HOST_UID}
       - PGID=${HOST_GID}
   owncloud:
+    #https://doc.owncloud.com/server/10.15/admin_manual/installation/docker/#docker-compose
     image: owncloud/server:${OWNCLOUD_VERSION:-latest}
     container_name: owncloud
     hostname: owncloud
