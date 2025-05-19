@@ -42,9 +42,9 @@ services:
     networks:
       - xlocal
     environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
       - MARIADB_AUTO_UPGRADE=1
     command: ["--max-allowed-packet=128M", "--innodb-log-file-size=64M"]
@@ -74,6 +74,7 @@ services:
       retries: 5
     volumes:
       - redis_data:/data
+  #https://github.com/nextcloud/docker
   nextcloud:
     image: nextcloud:${NEXTCLOUD_VERSION:-latest}
     container_name: nextcloud
@@ -98,20 +99,19 @@ services:
           propagation: shared
     environment:
       - MYSQL_HOST=mariadb
-      - MYSQL_DATABASE=${NEXTCLOUD_DB_NAME}
-      - MYSQL_USER=${NEXTCLOUD_DB_USERNAME}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       - REDIS_HOST=redis
-    #Recommended
-      - PHP_UPLOAD_LIMIT=16G
-      - PHP_MEMORY_LIMIT=512M
-      - NEXTCLOUD_MAX_UPLOAD_SIZE=16G
-      # Security hardening (from Nextcloud documentation)
-      #- OVERWRITEPROTOCOL=https #Enforce HTTPS
-      #- TRUSTED_PROXIES=172.16.0.0/12,192.168.1.0/16
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      #NextCloud specific environment variables
+      - NEXTCLOUD_ADMIN_USER=${NEXTCLOUD_ADMIN_USER}
+      - NEXTCLOUD_ADMIN_PASSWORD=${NEXTCLOUD_ADMIN_PASSWORD}
       - NEXTCLOUD_TRUSTED_DOMAINS=${NEXTCLOUD_TRUSTED_DOMAINS}
+      - NEXTCLOUD_MAX_UPLOAD_SIZE=16G
       - NEXTCLOUD_OVERWRITE_WEBROOT=/nextcloud
       - NEXTCLOUD_ENABLE_MAIL=false
+      - PHP_UPLOAD_LIMIT=16G
+      - PHP_MEMORY_LIMIT=512M
 
 # Network
 networks:
