@@ -34,54 +34,13 @@ services:
       - TZ=${TZ}
       - PUID=${HOST_UID}
       - PGID=${HOST_GID}
-  owncloud:
-    #https://doc.owncloud.com/server/10.15/admin_manual/installation/docker/#docker-compose
-    image: owncloud/server:${OWNCLOUD_VERSION:-latest}
-    container_name: owncloud
-    hostname: owncloud
-    restart: unless-stopped
-    networks:
-      - xlocal
-    ports:
-      - ${OWNCLOUD_PORT}:8080
-    depends_on:
-      mariadb:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    environment:
-      - OWNCLOUD_TRUSTED_DOMAINS=${OWNCLOUD_TRUSTED_DOMAINS}
-      - OWNCLOUD_DOMAIN=${OWNCLOUD_DOMAIN}
-      - OWNCLOUD_DB_TYPE=mysql
-      - OWNCLOUD_MYSQL_UTF8MB4=true
-      - OWNCLOUD_REDIS_ENABLED=true
-      - OWNCLOUD_ADMIN_USERNAME=${ADMIN_USERNAME}
-      - OWNCLOUD_ADMIN_PASSWORD=${ADMIN_PASSWORD}
-      - OWNCLOUD_DB_NAME=${OWNCLOUD_DB_NAME}
-      - OWNCLOUD_DB_USERNAME=${OWNCLOUD_DB_USERNAME}
-      - OWNCLOUD_DB_PASSWORD=${OWNCLOUD_DB_PASSWORD}
-      - OWNCLOUD_DB_HOST=${OWNCLOUD_DB_HOST}
-      - OWNCLOUD_REDIS_HOST=${OWNCLOUD_REDIS_HOST}
-    healthcheck:
-      test: ["CMD", "/usr/bin/healthcheck"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-    volumes:
-      - owncloud:/mnt/data
-      #https://doc.owncloud.com/server/next/admin_manual/configuration/files/external_storage/local.html
-      - type: bind
-        source: ${DATA_CLOUD}
-        target: /mnt/files
-        bind:
-          propagation: shared
   mariadb:
     image: mariadb:${MARIADB_VERSION:-latest}
     container_name: mariadb
     hostname: mariadb
     restart: unless-stopped
     networks:
-      - xlocal
+      - xlocal # Using the original network name
     environment:
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
@@ -90,12 +49,16 @@ services:
       - MARIADB_AUTO_UPGRADE=1
     command: ["--max-allowed-packet=128M", "--innodb-log-file-size=64M"]
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-u", "root", "--password=owncloud"]
+      test: ["CMD", "mysqladmin", "ping", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"] # Added -p
       interval: 10s
       timeout: 5s
       retries: 5
     volumes:
-      - mysql:/var/lib/mysql
+      - mariadb_data:/var/lib/mysql
+    # Security Best Practice:  Consider *not* exposing the MariaDB port.  Nextcloud
+    # communicates with it via the Docker network.  No ports section here.
+    # ports:
+    #   - "3306:3306" #  DO NOT UNCOMMENT THIS LINE UNLESS YOU HAVE A SPECIFIC REASON
   redis:
     image: redis:${REDIS_VERSION:-latest}
     container_name: redis
@@ -110,7 +73,47 @@ services:
       timeout: 5s
       retries: 5
     volumes:
-      - redis:/data
+      - redis_data:/data
+
+  nextcloud:
+    image: nextcloud:${NEXTCLOUD_VERSION:-latest}
+    container_name: nextcloud
+    hostname: nextcloud
+    restart: unless-stopped
+    networks:
+      - xlocal
+    ports:
+      - "8080:80"
+    depends_on:
+      - mariadb
+      - redis
+    volumes:
+      - nextcloud_app:/var/www/html       # Named volume for Nextcloud application code
+      - nextcloud_data:/var/www/html/data  # volume for nextcloud data
+      - type: bind                        # Mount user data.  Use a named volume if possible.
+        source: ${DATA_CLOUD}
+        target: /mnt/cloud
+        bind:
+          propagation: shared
+    environment:
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - NEXTCLOUD_ADMIN_USER=${NEXTCLOUD_ADMIN_USER}
+      - NEXTCLOUD_ADMIN_PASSWORD=${NEXTCLOUD_ADMIN_PASSWORD}
+      - NEXTCLOUD_DB_TYPE=mysql
+      - NEXTCLOUD_DB_NAME=${MYSQL_DATABASE}
+      - NEXTCLOUD_DB_USER=${MYSQL_USER}
+      - NEXTCLOUD_DB_HOST=mariadb
+      - REDIS_HOST=redis # Explicitly set Redis host
+    #Recommended
+      - PHP_UPLOAD_LIMIT=16G
+      - PHP_MEMORY_LIMIT=512M
+      - NEXTCLOUD_MAX_UPLOAD_SIZE=16G
+      # Security hardening (from Nextcloud documentation)
+      #- OVERWRITEPROTOCOL=https #Enforce HTTPS
+      - TRUSTED_PROXIES=172.16.0.0/12,192.168.1.0/16
+      - NEXTCLOUD_TRUSTED_DOMAINS=xlocal.duckdns.org
+      - NEXTCLOUD_OVERWRITE_WEBROOT=/nextcloud
+      - NEXTCLOUD_ENABLE_MAIL=false
 
 # Network
 networks:
@@ -121,9 +124,10 @@ networks:
 volumes:
   portainer_data:
     external: true
-  mysql:
+  mariadb_data:
     driver: local
-  redis:
+  redis_data:
+  nextcloud_app:
     driver: local
-  owncloud:
+  nextcloud_data:
     driver: local
