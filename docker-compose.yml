@@ -40,7 +40,7 @@ services:
     hostname: mariadb
     restart: unless-stopped
     networks:
-      - xlocal # Using the original network name
+      - xlocal
     environment:
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
@@ -49,7 +49,7 @@ services:
       - MARIADB_AUTO_UPGRADE=1
     command: ["--max-allowed-packet=128M", "--innodb-log-file-size=64M"]
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"] # Added -p
+      test: ["CMD", "mysqladmin", "ping", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -74,7 +74,6 @@ services:
       retries: 5
     volumes:
       - redis_data:/data
-
   nextcloud:
     image: nextcloud:${NEXTCLOUD_VERSION:-latest}
     container_name: nextcloud
@@ -85,12 +84,14 @@ services:
     ports:
       - "8080:80"
     depends_on:
-      - mariadb
-      - redis
+      mariadb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     volumes:
-      - nextcloud_app:/var/www/html       # Named volume for Nextcloud application code
-      - nextcloud_data:/var/www/html/data  # volume for nextcloud data
-      - type: bind                        # Mount user data.  Use a named volume if possible.
+      - nextcloud_app:/var/www/html         # Named volume for Nextcloud application code
+      - nextcloud_data:/var/www/html/data   # volume for nextcloud data
+      - type: bind                          # Mount user data.  Use a named volume if possible.
         source: ${DATA_CLOUD}
         target: /mnt/cloud
         bind:
@@ -100,18 +101,18 @@ services:
       - NEXTCLOUD_ADMIN_USER=${NEXTCLOUD_ADMIN_USER}
       - NEXTCLOUD_ADMIN_PASSWORD=${NEXTCLOUD_ADMIN_PASSWORD}
       - NEXTCLOUD_DB_TYPE=mysql
-      - NEXTCLOUD_DB_NAME=${MYSQL_DATABASE}
-      - NEXTCLOUD_DB_USER=${MYSQL_USER}
-      - NEXTCLOUD_DB_HOST=mariadb
-      - REDIS_HOST=redis # Explicitly set Redis host
+      - NEXTCLOUD_DB_NAME=${NEXTCLOUD_DB_NAME}
+      - NEXTCLOUD_DB_USER=${NEXTCLOUD_DB_USERNAME}
+      - NEXTCLOUD_DB_HOST=${NEXTCLOUD_DB_HOST:-mariadb}
+      - REDIS_HOST=redis
     #Recommended
       - PHP_UPLOAD_LIMIT=16G
       - PHP_MEMORY_LIMIT=512M
       - NEXTCLOUD_MAX_UPLOAD_SIZE=16G
       # Security hardening (from Nextcloud documentation)
       #- OVERWRITEPROTOCOL=https #Enforce HTTPS
-      - TRUSTED_PROXIES=172.16.0.0/12,192.168.1.0/16
-      - NEXTCLOUD_TRUSTED_DOMAINS=xlocal.duckdns.org
+      #- TRUSTED_PROXIES=172.16.0.0/12,192.168.1.0/16
+      - NEXTCLOUD_TRUSTED_DOMAINS=${NEXTCLOUD_TRUSTED_DOMAINS}
       - NEXTCLOUD_OVERWRITE_WEBROOT=/nextcloud
       - NEXTCLOUD_ENABLE_MAIL=false
 
