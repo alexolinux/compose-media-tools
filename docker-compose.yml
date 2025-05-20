@@ -10,7 +10,7 @@ services:
       - "8000:8000"
       - "9000:9000"
     volumes:
-      - portainer_data:/data
+      - data_portainer:/data
       - /var/run/docker.sock:/var/run/docker.sock
   jellyfin:
     image: jellyfin/jellyfin:${JELLYFIN_VERSION:-latest}
@@ -34,10 +34,10 @@ services:
       - TZ=${TZ}
       - PUID=${HOST_UID}
       - PGID=${HOST_GID}
-  mariadb:
+  mysql:
     image: mariadb:${MARIADB_VERSION:-latest}
-    container_name: mariadb
-    hostname: mariadb
+    container_name: mysql
+    hostname: mysql
     restart: unless-stopped
     networks:
       - xlocal
@@ -54,7 +54,7 @@ services:
       timeout: 5s
       retries: 5
     volumes:
-      - mariadb_data:/var/lib/mysql
+      - data_mysql:/var/lib/mysql
     # Security Best Practice:  Consider *not* exposing the MariaDB port.  Nextcloud
     # communicates with it via the Docker network.  No ports section here.
     # ports:
@@ -73,7 +73,7 @@ services:
       timeout: 5s
       retries: 5
     volumes:
-      - redis_data:/data
+      - data_redis:/data
   #https://github.com/nextcloud/docker
   nextcloud:
     image: nextcloud:${NEXTCLOUD_VERSION:-latest}
@@ -85,29 +85,28 @@ services:
     ports:
       - "8080:80"
     depends_on:
-      mariadb:
+      mysql:
         condition: service_healthy
       redis:
         condition: service_healthy
     volumes:
-      - nextcloud_app:/var/www/html         # Named volume for Nextcloud application code
-      - nextcloud_data:/var/www/html/data   # volume for nextcloud data
-      - type: bind                          # Mount user data.  Use a named volume if possible.
+      - app_cloud:/var/www/html
+      - data_cloud:/var/www/html/data
+      - type: bind 
         source: ${DATA_CLOUD}
         target: /mnt/cloud
         bind:
           propagation: shared
     environment:
-      - MYSQL_HOST=mariadb
+      - MYSQL_HOST=mysql
       - REDIS_HOST=redis
       - MYSQL_DATABASE=${MYSQL_DATABASE}
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      #NextCloud specific environment variables
       - NEXTCLOUD_ADMIN_USER=${NEXTCLOUD_ADMIN_USER}
       - NEXTCLOUD_ADMIN_PASSWORD=${NEXTCLOUD_ADMIN_PASSWORD}
-      - NEXTCLOUD_TRUSTED_DOMAINS=${NEXTCLOUD_TRUSTED_DOMAINS}
-      - TRUSTED_PROXIES=${NEXTCLOUD_TRUSTED_PROXIES}
+      - NEXTCLOUD_TRUSTED_DOMAINS="${NEXTCLOUD_TRUSTED_DOMAINS}"
+      - TRUSTED_PROXIES="${NEXTCLOUD_TRUSTED_PROXIES}"
       - NEXTCLOUD_MAX_UPLOAD_SIZE=16G
       - NEXTCLOUD_OVERWRITE_WEBROOT=/nextcloud
       - NEXTCLOUD_ENABLE_MAIL=false
@@ -121,12 +120,14 @@ networks:
 
 # Volumes
 volumes:
-  portainer_data:
+  data_portainer:
     external: true
-  mariadb_data:
-    driver: local
-  redis_data:
-  nextcloud_app:
-    driver: local
-  nextcloud_data:
-    driver: local
+  data_mysql:
+    external: true
+  data_redis:
+    external: true
+  app_cloud:
+    external: true
+  data_cloud:
+    external: true
+
