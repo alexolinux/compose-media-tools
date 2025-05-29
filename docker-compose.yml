@@ -90,13 +90,7 @@ services:
       redis:
         condition: service_healthy
     volumes:
-      - app_cloud:/var/www/html
-      - data_cloud:/var/www/html/data
-      - type: bind 
-        source: ${DATA_CLOUD}
-        target: /mnt/cloud
-        bind:
-          propagation: shared
+      - data_cloud:/var/www/html
     environment:
       - MYSQL_HOST=mysql
       - REDIS_HOST=redis
@@ -126,8 +120,5 @@ volumes:
     external: true
   data_redis:
     external: true
-  app_cloud:
-    external: true
-  data_cloud:
-    external: true
+  data_cloud: {}
 
