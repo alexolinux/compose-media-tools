@@ -6,8 +6,7 @@ Orchestrated Media Tools for **[Raspberry PI](https://www.raspberrypi.com/tutori
 
 ```shell
 .
-├── config
-│   └── init-ext.sh
+│
 ├── docker-compose.yml
 ├── env_template
 ├── LICENSE
@@ -26,7 +25,7 @@ Orchestrated Media Tools for **[Raspberry PI](https://www.raspberrypi.com/tutori
 
 * [portainer](https://github.com/portainer/portainer-compose/blob/master/docker-stack.yml)
 * [jellyfin](https://jellyfin.org/docs/general/installation/container/)
-* [owncloud](https://doc.owncloud.com/server/next/admin_manual/installation/docker/#docker-compose)
+* [nextcloud](https://github.com/nextcloud/docker)
 * [mariadb](https://hub.docker.com/_/mariadb)
 * [redis](https://www.docker.com/blog/how-to-use-the-redis-docker-official-image)
 
