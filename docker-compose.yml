@@ -23,7 +23,7 @@ services:
       - "8096:8096"
       - "8920:8920"
     volumes:
-      - '${CONFIG}/jellyfin:/config'
+      - ${CONFIG}/jellyfin:/config
       - ${HOME}/.cache/jellyfin:/cache
       - type: bind
         source: ${DATA_MEDIA}
