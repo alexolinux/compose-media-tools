@@ -91,7 +91,8 @@ services:
       redis:
         condition: service_healthy
     volumes:
-      - data_cloud:/var/www/html
+      - /cloud/data:/var/www/html/data
+      - nextcloud_html:/var/www/html
     environment:
       - MYSQL_HOST=mysql
       - REDIS_HOST=redis
@@ -121,5 +122,4 @@ volumes:
     external: true
   data_redis:
     external: true
-  data_cloud: {}
-
+  nextcloud_html: {}
