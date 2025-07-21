@@ -1,6 +1,6 @@
 services:
   portainer:
-    image: portainer/portainer-ce
+    image: portainer/portainer-ce:${PORTAINER_VERSION:-latest}
     container_name: portainer
     hostname: portainer
     restart: unless-stopped
