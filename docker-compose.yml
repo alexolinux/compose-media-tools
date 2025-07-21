@@ -12,6 +12,7 @@ services:
     volumes:
       - data_portainer:/data
       - /var/run/docker.sock:/var/run/docker.sock
+  
   jellyfin:
     image: jellyfin/jellyfin:${JELLYFIN_VERSION:-latest}
     container_name: jellyfin
@@ -34,6 +35,27 @@ services:
       - TZ=${TZ}
       - PUID=${HOST_UID}
       - PGID=${HOST_GID}
+  
+  #https://github.com/linuxserver/docker-calibre-web
+  calibre:
+    image: lscr.io/linuxserver/calibre-web:${CALIBRE_WEB_VERSION:-latest}
+    container_name: calibre
+    hostname: calibre
+    restart: unless-stopped
+    networks:
+      - xlocal
+    environment:
+      - TZ=${TZ}
+      - PUID=${HOST_UID}
+      - PGID=${HOST_GID}
+      - DOCKER_MODS=linuxserver/mods:universal-calibre  #optional
+      - OAUTHLIB_RELAX_TOKEN_SCOPE=1                    #optional
+    volumes:
+      - ${CONFIG}/calibre:/config
+      - ${BACKUP}/ebooks:/books
+    ports:
+      - 8083:8083
+
   mysql:
     image: mariadb:${MARIADB_VERSION:-latest}
     container_name: mysql
@@ -60,6 +82,7 @@ services:
     # communicates with it via the Docker network.  No ports section here.
     # ports:
     #   - "3306:3306" #  DO NOT UNCOMMENT THIS LINE UNLESS YOU HAVE A SPECIFIC REASON
+
   redis:
     image: redis:${REDIS_VERSION:-latest}
     container_name: redis
@@ -76,6 +99,7 @@ services:
     volumes:
       - data_redis:/data
   #https://github.com/nextcloud/docker
+
   nextcloud:
     image: nextcloud:${NEXTCLOUD_VERSION:-latest}
     container_name: nextcloud
