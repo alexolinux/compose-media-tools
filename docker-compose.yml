@@ -36,6 +36,24 @@ services:
       - PUID=${HOST_UID}
       - PGID=${HOST_GID}
 
+  kavita:
+    image: ghcr.io/kareadita/kavita:${KAVITA_VERSION:-latest}
+    container_name: kavita
+    hostname: kavita
+    restart: unless-stopped
+    networks:
+      - xlocal
+    ports:
+      - "5000:5000"
+    volumes:
+      - ${CONFIG}/kavita:/kavita/config
+      - ${BACKUP}/ebooks/tech:/tech
+      - ${BACKUP}/ebooks/literature:/books
+      - ${BACKUP}/ebooks/comics:/comics
+      - ${BACKUP}/ebooks/manga:/manga
+    environment:
+      - TZ=${TZ}
+
   mysql:
     image: mariadb:${MARIADB_VERSION:-latest}
     container_name: mysql
