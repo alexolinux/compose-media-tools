@@ -36,23 +36,27 @@ services:
       - PUID=${HOST_UID}
       - PGID=${HOST_GID}
 
-  kavita:
-    image: ghcr.io/kareadita/kavita:${KAVITA_VERSION:-latest}
-    container_name: kavita
-    hostname: kavita
+  komga:
+    image: gotson/komga:${KOMGA_VERSION:-latest}
+    container_name: komga
+    hostname: komga
     restart: unless-stopped
     networks:
       - xlocal
     ports:
-      - "5000:5000"
+      - "25600:25600"
     volumes:
-      - ${CONFIG}/kavita:/kavita/config
-      - ${BACKUP}/ebooks/tech:/tech
-      - ${BACKUP}/ebooks/literature:/books
-      - ${BACKUP}/ebooks/comics:/comics
-      - ${BACKUP}/ebooks/manga:/manga
+      - ${CONFIG}/komga:/config
+      - ${BACKUP}/books/novels:/data/novels
+      - ${BACKUP}/books/tech:/data/tech
+      - ${BACKUP}/books/comics:/data/comics
+      - ${BACKUP}/books/manga:/data/manga
+
+    user: "${HOST_UID}:${HOST_GID}"
     environment:
       - TZ=${TZ}
+      - PUID=${HOST_UID}
+      - PGID=${HOST_GID}
 
   mysql:
     image: mariadb:${MARIADB_VERSION:-latest}
