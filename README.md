@@ -23,17 +23,22 @@ Orchestrated Media Tools for **[Raspberry PI](https://www.raspberrypi.com/tutori
 
 ## Container/Services
 
-* [portainer](https://github.com/portainer/portainer-compose/blob/master/docker-stack.yml)
-* [jellyfin](https://jellyfin.org/docs/general/installation/container/)
-* [nextcloud](https://github.com/nextcloud/docker)
-* [mariadb](https://hub.docker.com/_/mariadb)
-* [redis](https://www.docker.com/blog/how-to-use-the-redis-docker-official-image)
+* [portainer](https://github.com/portainer/portainer-compose/blob/master/docker-stack.yml) Platform for managing containers
+* [jellyfin](https://jellyfin.org/docs/general/installation/container/) Personal Streaming Platform
+* [komga](https://komga.org/docs/introduction) E-Book Reader & Manager
+* [nextcloud](https://github.com/nextcloud/docker) Personal open source file sharing server
+* [mariadb](https://hub.docker.com/_/mariadb) (nextcloud dependency)
+* [redis](https://www.docker.com/blog/how-to-use-the-redis-docker-official-image) (nextcloud dependency)
 
 ### `.env`
 
 Add required `.env` to be loaded by `docker-compose.yml`
 
 * `.env`: Create/change these values according to your needs using `env_template` sample template file.
+
+### About Volumes
+
+ℹ️ Change the `docker-compose volumes` according to your environment
 
 ## Make
 
