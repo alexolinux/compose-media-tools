@@ -36,6 +36,28 @@ services:
       - PUID=${HOST_UID}
       - PGID=${HOST_GID}
 
+  komga:
+    image: gotson/komga:${KOMGA_VERSION:-latest}
+    container_name: komga
+    hostname: komga
+    restart: unless-stopped
+    networks:
+      - xlocal
+    ports:
+      - "25600:25600"
+    volumes:
+      - ${CONFIG}/komga:/config
+      - ${BACKUP}/books/novels:/data/novels
+      - ${BACKUP}/books/tech:/data/tech
+      - ${BACKUP}/books/comics:/data/comics
+      - ${BACKUP}/books/manga:/data/manga
+
+    user: "${HOST_UID}:${HOST_GID}"
+    environment:
+      - TZ=${TZ}
+      - PUID=${HOST_UID}
+      - PGID=${HOST_GID}
+
   mysql:
     image: mariadb:${MARIADB_VERSION:-latest}
     container_name: mysql
