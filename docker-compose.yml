@@ -1,5 +1,6 @@
 services:
   portainer:
+    #https://hub.docker.com/r/portainer/portainer-ce
     image: portainer/portainer-ce:${PORTAINER_VERSION:-latest}
     container_name: portainer
     hostname: portainer
@@ -102,38 +103,38 @@ services:
       - data_redis:/data
   #https://github.com/nextcloud/docker
 
-  nextcloud:
-    image: nextcloud:${NEXTCLOUD_VERSION:-latest}
-    container_name: nextcloud
-    hostname: nextcloud
-    restart: unless-stopped
-    networks:
-      - xlocal
-    ports:
-      - "8080:80"
-    depends_on:
-      mysql:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    volumes:
-      - /cloud/data:/var/www/html/data
-      - nextcloud_html:/var/www/html
-    environment:
-      - MYSQL_HOST=mysql
-      - REDIS_HOST=redis
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - NEXTCLOUD_ADMIN_USER=${NEXTCLOUD_ADMIN_USER}
-      - NEXTCLOUD_ADMIN_PASSWORD=${NEXTCLOUD_ADMIN_PASSWORD}
-      - NEXTCLOUD_TRUSTED_DOMAINS="${NEXTCLOUD_TRUSTED_DOMAINS}"
-      - TRUSTED_PROXIES="${NEXTCLOUD_TRUSTED_PROXIES}"
-      - NEXTCLOUD_MAX_UPLOAD_SIZE=16G
-      - NEXTCLOUD_OVERWRITE_WEBROOT=/nextcloud
-      - NEXTCLOUD_ENABLE_MAIL=false
-      - PHP_UPLOAD_LIMIT=16G
-      - PHP_MEMORY_LIMIT=512M
+#  nextcloud:
+#    image: nextcloud:${NEXTCLOUD_VERSION:-latest}
+#    container_name: nextcloud
+#    hostname: nextcloud
+#    restart: unless-stopped
+#    networks:
+#      - xlocal
+#    ports:
+#      - "8080:80"
+#    depends_on:
+#      mysql:
+#        condition: service_healthy
+#      redis:
+#        condition: service_healthy
+#    volumes:
+#      - ${DATA_CLOUD}:/var/www/html/data
+#      - nextcloud_html:/var/www/html
+#    environment:
+#      - MYSQL_HOST=mysql
+#      - REDIS_HOST=redis
+#      - MYSQL_DATABASE=${MYSQL_DATABASE}
+#      - MYSQL_USER=${MYSQL_USER}
+#      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+#      - NEXTCLOUD_ADMIN_USER=${NEXTCLOUD_ADMIN_USER}
+#      - NEXTCLOUD_ADMIN_PASSWORD=${NEXTCLOUD_ADMIN_PASSWORD}
+#      - NEXTCLOUD_TRUSTED_DOMAINS="${NEXTCLOUD_TRUSTED_DOMAINS}"
+#      - TRUSTED_PROXIES="${NEXTCLOUD_TRUSTED_PROXIES}"
+#      - NEXTCLOUD_MAX_UPLOAD_SIZE=16G
+#      - NEXTCLOUD_OVERWRITE_WEBROOT=/nextcloud
+#      - NEXTCLOUD_ENABLE_MAIL=false
+#      - PHP_UPLOAD_LIMIT=16G
+#      - PHP_MEMORY_LIMIT=512M
 
 # Network
 networks:
@@ -143,9 +144,10 @@ networks:
 # Volumes
 volumes:
   data_portainer:
-    external: true
+    external: false
   data_mysql:
-    external: true
+    external: false
   data_redis:
     external: true
-  nextcloud_html: {}
+#  nextcloud_html: {}
+
