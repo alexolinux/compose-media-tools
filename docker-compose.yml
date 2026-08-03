@@ -1,19 +1,4 @@
 services:
-  portainer:
-    #https://hub.docker.com/r/portainer/portainer-ce
-    image: portainer/portainer-ce:${PORTAINER_VERSION:-latest}
-    container_name: portainer
-    hostname: portainer
-    restart: unless-stopped
-    networks:
-      - xlocal
-    ports:
-      - "8000:8000"
-      - "9000:9000"
-    volumes:
-      - data_portainer:/data
-      - /var/run/docker.sock:/var/run/docker.sock
-  
   jellyfin:
     image: jellyfin/jellyfin:${JELLYFIN_VERSION:-latest}
     container_name: jellyfin
@@ -30,8 +15,8 @@ services:
       - type: bind
         source: ${DATA_MEDIA}
         target: /media
-        bind:
-          propagation: shared
+        #bind:
+        #  propagation: shared
     environment:
       - TZ=${TZ}
       - PUID=${HOST_UID}
@@ -48,10 +33,10 @@ services:
       - "25600:25600"
     volumes:
       - ${CONFIG}/komga:/config
-      - ${BACKUP}/books/novels:/data/novels
-      - ${BACKUP}/books/tech:/data/tech
-      - ${BACKUP}/books/comics:/data/comics
-      - ${BACKUP}/books/manga:/data/manga
+      - ${SDCARD}/books/novels:/data/novels
+      - ${SDCARD}/books/tech:/data/tech
+      - ${SDCARD}/books/comics:/data/comics
+      - ${SDCARD}/books/manga:/data/manga
 
     user: "${HOST_UID}:${HOST_GID}"
     environment:
@@ -59,11 +44,46 @@ services:
       - PUID=${HOST_UID}
       - PGID=${HOST_GID}
 
+  # NextCloud + MySql + Redis
+  #https://github.com/nextcloud/docker
+  nextcloud:
+    image: nextcloud:${NEXTCLOUD_VERSION:-latest}
+    container_name: nextcloud
+    hostname: nextcloud
+    restart: no
+    networks:
+      - xlocal
+    ports:
+      - "8080:80"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ${DATA_CLOUD}:/var/www/html/data
+      - nextcloud_html:/var/www/html
+    environment:
+      - MYSQL_HOST=mysql
+      - REDIS_HOST=redis
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - NEXTCLOUD_ADMIN_USER=${NEXTCLOUD_ADMIN_USER}
+      - NEXTCLOUD_ADMIN_PASSWORD=${NEXTCLOUD_ADMIN_PASSWORD}
+      - NEXTCLOUD_TRUSTED_DOMAINS="${NEXTCLOUD_TRUSTED_DOMAINS}"
+      - TRUSTED_PROXIES="${NEXTCLOUD_TRUSTED_PROXIES}"
+      - NEXTCLOUD_MAX_UPLOAD_SIZE=16G
+      - NEXTCLOUD_OVERWRITE_WEBROOT=/nextcloud
+      - NEXTCLOUD_ENABLE_MAIL=false
+      - PHP_UPLOAD_LIMIT=16G
+      - PHP_MEMORY_LIMIT=512M
+
   mysql:
     image: mariadb:${MARIADB_VERSION:-latest}
     container_name: mysql
     hostname: mysql
-    restart: unless-stopped
+    restart: no
     networks:
       - xlocal
     environment:
@@ -90,7 +110,7 @@ services:
     image: redis:${REDIS_VERSION:-latest}
     container_name: redis
     hostname: redis
-    restart: unless-stopped
+    restart: no
     networks:
       - xlocal
     command: ["--databases", "1"]
@@ -101,40 +121,6 @@ services:
       retries: 5
     volumes:
       - data_redis:/data
-  #https://github.com/nextcloud/docker
-
-#  nextcloud:
-#    image: nextcloud:${NEXTCLOUD_VERSION:-latest}
-#    container_name: nextcloud
-#    hostname: nextcloud
-#    restart: unless-stopped
-#    networks:
-#      - xlocal
-#    ports:
-#      - "8080:80"
-#    depends_on:
-#      mysql:
-#        condition: service_healthy
-#      redis:
-#        condition: service_healthy
-#    volumes:
-#      - ${DATA_CLOUD}:/var/www/html/data
-#      - nextcloud_html:/var/www/html
-#    environment:
-#      - MYSQL_HOST=mysql
-#      - REDIS_HOST=redis
-#      - MYSQL_DATABASE=${MYSQL_DATABASE}
-#      - MYSQL_USER=${MYSQL_USER}
-#      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-#      - NEXTCLOUD_ADMIN_USER=${NEXTCLOUD_ADMIN_USER}
-#      - NEXTCLOUD_ADMIN_PASSWORD=${NEXTCLOUD_ADMIN_PASSWORD}
-#      - NEXTCLOUD_TRUSTED_DOMAINS="${NEXTCLOUD_TRUSTED_DOMAINS}"
-#      - TRUSTED_PROXIES="${NEXTCLOUD_TRUSTED_PROXIES}"
-#      - NEXTCLOUD_MAX_UPLOAD_SIZE=16G
-#      - NEXTCLOUD_OVERWRITE_WEBROOT=/nextcloud
-#      - NEXTCLOUD_ENABLE_MAIL=false
-#      - PHP_UPLOAD_LIMIT=16G
-#      - PHP_MEMORY_LIMIT=512M
 
 # Network
 networks:
@@ -143,11 +129,9 @@ networks:
 
 # Volumes
 volumes:
-  data_portainer:
-    external: false
   data_mysql:
     external: false
   data_redis:
     external: true
-#  nextcloud_html: {}
+  nextcloud_html: {}
 
