@@ -23,7 +23,6 @@ Orchestrated Media Tools for **[Raspberry PI](https://www.raspberrypi.com/tutori
 
 ## Container/Services
 
-* [portainer](https://github.com/portainer/portainer-compose/blob/master/docker-stack.yml) Platform for managing containers
 * [jellyfin](https://jellyfin.org/docs/general/installation/container/) Personal Streaming Platform
 * [komga](https://komga.org/docs/introduction) E-Book Reader & Manager
 * [nextcloud](https://github.com/nextcloud/docker) Personal open source file sharing server
@@ -59,4 +58,4 @@ https://github.com/docker/awesome-compose/tree/master
 **Author:**
 Alex Mendes
 
-<https://www.linkedin.com/in/mendesalex/>
+<https://www.alexolinux.com>
